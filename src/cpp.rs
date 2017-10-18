@@ -77,6 +77,7 @@ pub fn create(dir: &str, tmpl_dir: &str, name: &str, testing: &str) {
     println!("Creating project directory");
     create_dir_all(dir.to_str().unwrap()).unwrap();
 
+    
     println!("Checking destination");
     if git::check_git_repository(dir.to_str().unwrap()).success() {
         panic!("Seems to already be a valid git repository");
@@ -89,7 +90,6 @@ pub fn create(dir: &str, tmpl_dir: &str, name: &str, testing: &str) {
         .for_each(|x| {
             let src = x.0;
             let sdir = dir.to_str().unwrap().to_owned() + "/";            
-            let path = x.0.to_string().replace("cpp/", &sdir);
             let dst = sdir + &get_destination(x.0);
 
             match tera.render(&src, &ctx) {
@@ -130,7 +130,7 @@ fn write(content: &String, dst: &Path) {
     println!("...generating {}", dst.to_str().unwrap());
     create_dir_all(dst.parent().unwrap()).unwrap();
     let mut file = File::create(dst).unwrap();
-    file.write_all(content.as_bytes());
+    file.write_all(content.as_bytes()).unwrap();
 }
 
 fn tera(templates: &Vec<(&str,&str)>) -> Tera {
