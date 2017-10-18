@@ -67,17 +67,22 @@ pub fn create(dir: &str, name: &str, testing: &str) {
     let dir  = Path::new(dir);
     let tera = tera(&templates);
     let ctx  = context(name, testing);
-    
-    if git::check_git_repository(dir.to_str().unwrap()).success() {
-        panic!("Seems to already be a valid git repository");
-    }
-    
+
+    println!("Checking for git executable");
     if !git::check_executable().success() {
         panic!("Could not find git executable");
     }
-        
+
+    println!("Creating project directory");
+    create_dir_all(dir.to_str().unwrap()).unwrap();
+
+    println!("Checking destination");
+    if git::check_git_repository(dir.to_str().unwrap()).success() {
+        panic!("Seems to already be a valid git repository");
+    }
+
+    println!("Generating files...");
     let rxtest = Regex::new(r"^cpp/test/.*$").unwrap();
-    
     templates.iter()
         .map(|x| x.0)
         .filter(|x| testing != "" || !rxtest.is_match(x))
@@ -92,13 +97,24 @@ pub fn create(dir: &str, name: &str, testing: &str) {
             }
         });
 
+    println!("Initializing git repository");
     if !git::init(dir.to_str().unwrap()).success() {
         panic!("Error: Could not initialize git repository in {:?}", dir);
+    }
+
+    if testing != "" {
+        println!("Adding catch submodule");
+        if !git::submodule_add(
+            dir.to_str().unwrap(),
+            "https://github.com/philsquared/Catch.git",
+            "test/catch").success() {
+            panic!("Failed to add catch submodule");
+        }
     }
 }
 
 fn write(content: &String, dst: &Path) {
-    println!("Creating {}", dst.to_str().unwrap());
+    println!("...generating {}", dst.to_str().unwrap());
     create_dir_all(dst.parent().unwrap()).unwrap();
     let mut file = File::create(dst).unwrap();
     file.write_all(content.as_bytes());
