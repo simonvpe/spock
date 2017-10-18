@@ -8,7 +8,7 @@ use git;
 
 pub fn create(dir: &str, name: &str, testing: &str) {
     let templates = vec![
-        ("cpp/CMakeLists.txt", indoc!("
+        ("all", "cpp/CMakeLists.txt", indoc!("
             cmake_minimum_required(VERSION 3.8)
             project({{ name }})
 
@@ -20,11 +20,12 @@ pub fn create(dir: &str, name: &str, testing: &str) {
             set(CMAKE_CXX_FLAGS_DEBUG \"-g\")
             set(CMAKE_CXX_FLAGS_RELEASE \"-O3\")
 
+            add_subdirectory(src)
             {% if testing != \"\" %}
             add_subdirectory(test)
             {% endif %}
-        ")),
-        ("cpp/test/CMakeLists.txt", indoc!("
+        ")),   
+        ("test", "cpp/test/CMakeLists.txt", indoc!("
             enable_testing()
 
             # Prepare Catch library for other executables
@@ -47,11 +48,11 @@ pub fn create(dir: &str, name: &str, testing: &str) {
 
             add_test(all tests)
         ")),
-        ("cpp/test/testrunner.cpp", indoc!("
+        ("test", "cpp/test/testrunner.cpp", indoc!("
             #define CATCH_CONFIG_MAIN
             #include \"catch.hpp\"
         ")),
-        ("cpp/test/example.cpp", indoc!("
+        ("test", "cpp/test/example.cpp", indoc!("
             #include \"catch.hpp\"
             SCENARIO(\"Test Scenario\") {
                  GIVEN(\"an int\") {
@@ -65,7 +66,10 @@ pub fn create(dir: &str, name: &str, testing: &str) {
     ];
 
     let dir  = Path::new(dir);
-    let tera = tera(&templates);
+    let tera_input = templates.iter()
+        .map(|x| (x.1, x.2))
+        .collect::<Vec<(&str,&str)>>();
+    let tera = tera(&tera_input);
     let ctx  = context(name, testing);
 
     println!("Checking for git executable");
@@ -84,15 +88,14 @@ pub fn create(dir: &str, name: &str, testing: &str) {
     println!("Generating files...");
     let rxtest = Regex::new(r"^cpp/test/.*$").unwrap();
     templates.iter()
-        .map(|x| x.0)
-        .filter(|x| testing != "" || !rxtest.is_match(x))
+        .filter(|x| testing != "" || x.0 != "test")
+        .map(|x| x.1)
         .for_each(|x| {
-            let tmp = x;
             let sdir = dir.to_str().unwrap().to_owned() + "/";
-            let hej = x.replace("cpp/", &sdir);
-            let dst = Path::new(&hej);
-            match tera.render(&tmp.to_string(), &ctx) {
-                Ok(ref x) => write(x, dst),
+            let tmpl = x;
+            let path = x.to_string().replace("cpp/", &sdir);
+            match tera.render(&tmpl, &ctx) {
+                Ok(ref x) => write(x, Path::new(&path)),
                 Err(e)    => panic!("{:?}", e)
             }
         });
