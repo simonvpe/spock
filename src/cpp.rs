@@ -6,9 +6,9 @@ use std::path::Path;
 
 use git;
 
-pub fn create(dir: &str, name: &str, testing: &str) {
+pub fn create(dir: &str, tmpl_dir: &str, name: &str, testing: &str) {
     let templates = vec![
-        ("all", "cpp/CMakeLists.txt", indoc!("
+        ("cpp/CMakeLists.txt.all", indoc!("
             cmake_minimum_required(VERSION 3.8)
             project({{ name }})
 
@@ -25,7 +25,7 @@ pub fn create(dir: &str, name: &str, testing: &str) {
             add_subdirectory(test)
             {% endif %}
         ")),   
-        ("test", "cpp/test/CMakeLists.txt", indoc!("
+        ("cpp/test/CMakeLists.txt.test", indoc!("
             enable_testing()
 
             # Prepare Catch library for other executables
@@ -48,11 +48,11 @@ pub fn create(dir: &str, name: &str, testing: &str) {
 
             add_test(all tests)
         ")),
-        ("test", "cpp/test/testrunner.cpp", indoc!("
+        ("cpp/test/testrunner.cpp.test", indoc!("
             #define CATCH_CONFIG_MAIN
             #include \"catch.hpp\"
         ")),
-        ("test", "cpp/test/example.cpp", indoc!("
+        ("cpp/test/example.cpp.test", indoc!("
             #include \"catch.hpp\"
             SCENARIO(\"Test Scenario\") {
                  GIVEN(\"an int\") {
@@ -66,10 +66,7 @@ pub fn create(dir: &str, name: &str, testing: &str) {
     ];
 
     let dir  = Path::new(dir);
-    let tera_input = templates.iter()
-        .map(|x| (x.1, x.2))
-        .collect::<Vec<(&str,&str)>>();
-    let tera = tera(&tera_input);
+    let tera = tera(&templates);
     let ctx  = context(name, testing);
 
     println!("Checking for git executable");
@@ -86,16 +83,17 @@ pub fn create(dir: &str, name: &str, testing: &str) {
     }
 
     println!("Generating files...");
-    let rxtest = Regex::new(r"^cpp/test/.*$").unwrap();
+    
     templates.iter()
-        .filter(|x| testing != "" || x.0 != "test")
-        .map(|x| x.1)
+        .filter(|x| testing != "" || get_tag(x.0) != "test")
         .for_each(|x| {
-            let sdir = dir.to_str().unwrap().to_owned() + "/";
-            let tmpl = x;
-            let path = x.to_string().replace("cpp/", &sdir);
-            match tera.render(&tmpl, &ctx) {
-                Ok(ref x) => write(x, Path::new(&path)),
+            let src = x.0;
+            let sdir = dir.to_str().unwrap().to_owned() + "/";            
+            let path = x.0.to_string().replace("cpp/", &sdir);
+            let dst = sdir + &get_destination(x.0);
+
+            match tera.render(&src, &ctx) {
+                Ok(ref x) => write(x, Path::new(&dst)),
                 Err(e)    => panic!("{:?}", e)
             }
         });
@@ -114,6 +112,18 @@ pub fn create(dir: &str, name: &str, testing: &str) {
             panic!("Failed to add catch submodule");
         }
     }
+}
+
+fn get_tag(template: &str) -> String {
+    let re = Regex::new(r"^cpp/[\w./-]+\.(?P<tag>[\w]+)$").unwrap();
+    let caps = re.captures(template).unwrap();
+    caps["tag"].into()
+}
+
+fn get_destination(template: &str) -> String {
+    let re = Regex::new(r"^cpp/(?P<dst>[\w./-]+)\.[\w]+$").unwrap();
+    let caps = re.captures(template).unwrap();
+    caps["dst"].into()
 }
 
 fn write(content: &String, dst: &Path) {

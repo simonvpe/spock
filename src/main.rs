@@ -13,6 +13,11 @@ fn main() {
     let matches = App::new("spock")
         .about("A package manager")
         .author("Simon Pettersson <simon.v.pettersson@gmail.com>")
+        .arg(Arg::with_name("templates")
+             .help("the location of the templates to use")
+             .takes_value(true)
+             .long("templates")
+             .short("t"))
         .subcommand(SubCommand::with_name("create")
                     .about("creates a new package")
                     .arg(Arg::with_name("lang")
@@ -42,6 +47,7 @@ fn main() {
         
         ("create", Some(sub_matches)) => Event::Create {
             dir:  sub_matches.value_of("dir").unwrap_or("./"),
+            tmpl_dir: matches.value_of("templates").unwrap_or("/usr/share/spock"),
             lang: sub_matches.value_of("lang").unwrap(),
             name: sub_matches.value_of("name").unwrap(),
             testing: match sub_matches.value_of("testing") {
@@ -57,16 +63,22 @@ fn main() {
 }
 
 enum Event<'a> {
-    Create { dir: &'a str, lang: &'a str, name: &'a str, testing: &'a str },
+    Create {
+        dir: &'a str,
+        tmpl_dir: &'a str,
+        lang: &'a str,
+        name: &'a str,
+        testing: &'a str
+    },
     Invalid
 }
 
 fn handle_event(evt: Event) {
     match evt {
-        Event::Create { dir, lang, name, testing } => {
+        Event::Create { dir, tmpl_dir, lang, name, testing } => {
             match lang {
                 "cpp" | "c++" | "C++" => {
-                    cpp::create(dir, name, testing);
+                    cpp::create(dir, tmpl_dir, name, testing);
                 },
                 _ => println!("Bad language \"{}\"", lang)
             }
