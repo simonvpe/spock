@@ -1,7 +1,6 @@
+#[macro_use]
 extern crate tera;
 extern crate clap;
-#[macro_use]
-extern crate indoc;
 extern crate regex;
 
 use clap::{App, Arg, SubCommand};

@@ -6,5 +6,4 @@ authors = ["Simon Pettersson <simon.v.pettersson@gmail.com>"]
 [dependencies]
 clap = "2.26"
 tera = "0.10"
-indoc = "0.2"
 regex = "0.2"
