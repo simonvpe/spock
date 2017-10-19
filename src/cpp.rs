@@ -5,9 +5,9 @@ use std::io::prelude::*;
 use std::path::Path;
 use git;
 
-pub fn create(dir: &str, tmpl_dir: &str, name: &str, testing: &str) {
+pub fn create(dir: &str, tmpl_dir: &str, name: &str, testing: &str, exec: bool, lib: bool) {
 
-    let ctx  = context(name, testing);
+    let ctx  = context(name, testing, exec, lib);
 
     println!("Checking for git executable");
     if !git::check_executable().success() {
@@ -25,7 +25,7 @@ pub fn create(dir: &str, tmpl_dir: &str, name: &str, testing: &str) {
 
     println!("Generating files...");
 
-    let tera = tera(tmpl_dir, testing);
+    let tera = tera(tmpl_dir, testing, exec, lib);
 
     tera.templates.keys().for_each(|x| {
         let entry = tera.templates[x].clone();
@@ -68,21 +68,37 @@ fn write(content: &String, dst: &str) {
     file.write_all(content.as_bytes()).unwrap();
 }
 
-fn tera(tmpl_dir: &str, testing: &str) -> Tera {
-    let glob_all = tmpl_dir.to_owned() + "/cpp/**/*.all";
-    let glob_test = tmpl_dir.to_owned() + "/cpp/**/*.test";
-
-    let mut tera = compile_templates!(&glob_all[..]);
+fn tera(tmpl_dir: &str, testing: &str, exec: bool, lib: bool) -> Tera {
+    let tmpl_dir  = tmpl_dir.to_owned();
+    let glob_all  = tmpl_dir.clone() + "/cpp/**/*.all";
+    let glob_test = tmpl_dir.clone() + "/cpp/**/*.test";
+    let glob_exec = tmpl_dir.clone() + "/cpp/**/*.exec";
+    let glob_lib  = tmpl_dir.clone() + "/cpp/**/*.lib";
+    
+    let mut tera  = compile_templates!(&glob_all[..]);
     let test_tera = compile_templates!(&glob_test[..]);
+    let exec_tera = compile_templates!(&glob_exec[..]);
+    let lib_tera  = compile_templates!(&glob_lib[..]);
+    
     if testing != "" {
         tera.extend( &test_tera );
+    }
+
+    if exec {
+        tera.extend( &exec_tera );
+    }
+    
+    if lib {
+        tera.extend( &lib_tera );
     }
     tera
 }
 
-fn context(name: &str, testing: &str) -> Context {
+fn context(name: &str, testing: &str, exec: bool, lib: bool) -> Context {
    let mut context = Context::new();
     context.add("name", &name);
     context.add("testing", &testing);
+    context.add("executable", &exec);
+    context.add("library", &lib);
     context
 }

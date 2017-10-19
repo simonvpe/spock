@@ -1,0 +1,19 @@
+#include "catch.hpp"
+{% if library %}
+#include <example.hpp>
+{% endif %}
+
+SCENARIO("Test Scenario") {
+  GIVEN("an int") {
+    int x = 42;
+    {% if library %}
+    THEN("check that it is equal to foo()") {
+      CHECK( x == foo() );
+    }
+    {% else %}
+    THEN("check that it is equal to 42") {
+      CHECK( x == 42 );
+    }    
+    {% endif %}
+  }
+}

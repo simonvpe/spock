@@ -1,0 +1,15 @@
+set(SOURCES
+  ${CMAKE_CURRENT_SOURCE_DIR}/example.cpp
+)
+
+add_executable({{ name }}
+  ${SOURCES}
+)
+
+target_compile_features({{ name }}
+  PRIVATE cxx_std_17
+)
+
+install(TARGETS {{ name }}
+  DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
+)

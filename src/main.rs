@@ -39,9 +39,23 @@ fn main() {
                          .takes_value(true)
                          .long("dir")
                          .short("C"))
+                    .arg(Arg::with_name("exec")
+                         .help("this project is an executable")
+                         .takes_value(false)
+                         .long("exec")
+                         .short("e")
+                         .required(true)
+                         .conflicts_with("lib"))
+                    .arg(Arg::with_name("lib")
+                         .help("this project is a library")
+                         .takes_value(false)
+                         .long("lib")
+                         .short("l")
+                         .required(true)
+                         .conflicts_with("exec"))
         )
         .get_matches();
-
+    
     let evt = match matches.subcommand() {
         
         ("create", Some(sub_matches)) => Event::Create {
@@ -52,9 +66,10 @@ fn main() {
             testing: match sub_matches.value_of("testing") {
                 Some(x) => x,
                 None => ""
-            }
+            },
+            exec: sub_matches.is_present("exec"),
+            lib: sub_matches.is_present("lib")
         },
-        
         (&_, _) => Event::Invalid
     };
 
@@ -67,17 +82,19 @@ enum Event<'a> {
         tmpl_dir: &'a str,
         lang: &'a str,
         name: &'a str,
-        testing: &'a str
+        testing: &'a str,
+        exec: bool,
+        lib: bool
     },
     Invalid
 }
 
 fn handle_event(evt: Event) {
     match evt {
-        Event::Create { dir, tmpl_dir, lang, name, testing } => {
+        Event::Create { dir, tmpl_dir, lang, name, testing, exec, lib } => {
             match lang {
                 "cpp" | "c++" | "C++" => {
-                    cpp::create(dir, tmpl_dir, name, testing);
+                    cpp::create(dir, tmpl_dir, name, testing, exec, lib);
                 },
                 _ => println!("Bad language \"{}\"", lang)
             }
