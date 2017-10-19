@@ -51,7 +51,6 @@ package() {
     
     prefix="${pkgdir}/usr"
     share="${prefix}/share/spock/"
-    echo $bin >/tmp/pkgdir
     
     cargo install --root "${prefix}"
 
