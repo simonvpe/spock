@@ -18,8 +18,31 @@ Every file generated is a [Tera](https://github.com/Keats/tera) template. Each t
 Installation
 ------------
 
-For now you need to clone the repository and build it yourself using Cargo (this is described in the Cargo documentation).
+### Arch Linux
 
+1. Download the PKGBUILD file and from the same directory run
+   ``` bash
+   makepkg -i
+   ```
+
+### Other Linux Platforms
+
+1. Install rust
+
+2. Install using cargo
+   ``` bash
+   cargo install --git https://github.com/simonvpe/spock
+   ```
+   
+3. Add the stuff to your path as instructed by the installation
+
+4. Clone the repo and install the templates
+   ``` bash
+   git clone https://github.com/simonvpe/spock && cd spock
+   sudo install -d -m 755 /usr/share/spock
+   sudo cp -R templates/cpp /usr/share/spock/
+   sudo chmod -R 755 /usr/share/spock
+   
 Contributing
 ------------
 
