@@ -9,7 +9,7 @@
 # Maintainer: Your Name <youremail@domain.com>
 toolname=spock
 pkgname=${toolname}-git
-pkgver=r11.49f23d9
+pkgver=VERSION
 pkgrel=1
 pkgdesc=""
 arch=('x86_64')
