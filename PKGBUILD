@@ -1,6 +1,5 @@
 # Maintainer: Simon Pettersson <simon.v.pettersson@gmail.com>
 
-# Maintainer: Your Name <youremail@domain.com>
 toolname=spock
 pkgname=${toolname}-git
 pkgver=VERSION
