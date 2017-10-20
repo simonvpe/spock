@@ -46,6 +46,11 @@ Installation
 Usage
 -----
 
+Discover spock
+``` bash
+spock help
+```
+
 Scaffold a new C++ **executable** project with [catch](https://github.com/philsquared/Catch) for running tests
 ``` bash
 mkdir my-awesome-project && spock -C ./my-awesome-project create --tesing catch --exec c++ my-awesome-project 
