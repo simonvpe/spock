@@ -49,3 +49,8 @@ Contributing
 Pull requestes are accepted. The most appreciated PR's are the following
 - Enhancing the interface of the `cpp` module.
 - Error handling
+- Enhance the templates (I am not particularily good with CMake)
+
+Possible features in the future
+- Spock modules `spock add https://github.com/user/some-cool-spock-lib`
+- Querying CMake files to re-generate as new teplates are released
