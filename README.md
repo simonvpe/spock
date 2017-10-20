@@ -48,12 +48,12 @@ Usage
 
 Scaffold a new C++ **executable** project with [catch](https://github.com/philsquared/Catch) for running tests
 ``` bash
-spock create --tesing catch --exec c++ my-awesome-project 
+mkdir my-awesome-project && spock -C ./my-awesome-project create --tesing catch --exec c++ my-awesome-project 
 ```
    
 Scaffold a new C++ **shared library** project with [catch](https://github.com/philsquared/Catch) for running tests
 ``` bash
-spock create --tesing catch --lib c++ my-awesome-project 
+mkdir my-awesome-project && spock -C ./my-awesome-project create --tesing catch --lib c++ my-awesome-project 
 ```  
    
 Contributing
