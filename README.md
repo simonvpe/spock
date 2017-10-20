@@ -42,6 +42,19 @@ Installation
    sudo install -d -m 755 /usr/share/spock
    sudo cp -R templates/cpp /usr/share/spock/
    sudo chmod -R 755 /usr/share/spock
+   ```
+Usage
+-----
+
+Scaffold a new C++ **executable** project with [catch](https://github.com/philsquared/Catch) for running tests
+``` bash
+spock create --tesing catch --exec c++ my-awesome-project 
+```
+   
+Scaffold a new C++ **shared library** project with [catch](https://github.com/philsquared/Catch) for running tests
+``` bash
+spock create --tesing catch --lib c++ my-awesome-project 
+```  
    
 Contributing
 ------------
