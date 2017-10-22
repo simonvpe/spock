@@ -51,6 +51,17 @@ pub fn create(dir: &str, tmpl_dir: &str, name: &str, testing: &str, exec: bool, 
             panic!("Failed to add catch submodule");
         }
     }
+
+    println!("Adding all files");
+    let glob = dir.to_owned() + "/*";
+    if !git::add(dir, &glob).success() {
+        panic!("Failed to add files");
+    }
+
+    println!("Committing");
+    if !git::commit(dir, "Initial commit").success() {
+        panic!("Failed to commit");
+    }
 }
 
 

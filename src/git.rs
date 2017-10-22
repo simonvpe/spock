@@ -26,6 +26,20 @@ pub fn init(dir: &str) -> ExitStatus {
         .expect("Failed to initialize repository")
 }
 
+pub fn add(dir: &str, glob: &str) -> ExitStatus {
+    Command::new("git")
+        .args(&["-C", dir, "add", glob])
+        .status()
+        .expect("Failed to run command")
+}
+
+pub fn commit(dir: &str, message: &str) -> ExitStatus {
+    Command::new("git")
+        .args(&["-C", dir, "commit", "-m", message])
+        .status()
+        .expect("Failed to run command")
+}
+
 pub fn submodule_add(dir: &str, submodule: &str, suffix: &str) -> ExitStatus {
     let dst = Path::new(dir).join(suffix);
     Command::new("git")
