@@ -42,6 +42,24 @@ Installation
    sudo install -d -m 755 /usr/share/spock
    sudo cp -R templates/cpp /usr/share/spock/
    sudo chmod -R 755 /usr/share/spock
+   ```
+Usage
+-----
+
+Discover spock
+``` bash
+spock help
+```
+
+Scaffold a new C++ **executable** project with [catch](https://github.com/philsquared/Catch) for running tests
+``` bash
+mkdir my-awesome-project && spock -C ./my-awesome-project create --tesing catch --exec c++ my-awesome-project 
+```
+   
+Scaffold a new C++ **shared library** project with [catch](https://github.com/philsquared/Catch) for running tests
+``` bash
+mkdir my-awesome-project && spock -C ./my-awesome-project create --tesing catch --lib c++ my-awesome-project 
+```  
    
 Contributing
 ------------
@@ -49,3 +67,8 @@ Contributing
 Pull requestes are accepted. The most appreciated PR's are the following
 - Enhancing the interface of the `cpp` module.
 - Error handling
+- Enhance the templates (I am not particularily good with CMake)
+
+Possible features in the future
+- Spock modules `spock add https://github.com/user/some-cool-spock-lib`
+- Querying CMake files to re-generate as new teplates are released
