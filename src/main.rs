@@ -1,3 +1,7 @@
+#![cfg_attr(feature="clippy", feature(plugin))]
+
+#![cfg_attr(feature="clippy", plugin(clippy))]
+
 #[macro_use]
 extern crate tera;
 extern crate clap;
@@ -73,7 +77,7 @@ fn main() {
         (&_, _) => Event::Invalid
     };
 
-    handle_event(evt);
+    handle_event(&evt);
 }
 
 enum Event<'a> {
@@ -89,8 +93,8 @@ enum Event<'a> {
     Invalid
 }
 
-fn handle_event(evt: Event) {
-    match evt {
+fn handle_event(evt: &Event) {
+    match *evt {
         Event::Create { dir, tmpl_dir, lang, name, testing, exec, lib } => {
             match lang {
                 "cpp" | "c++" | "C++" => {

@@ -7,3 +7,4 @@ authors = ["Simon Pettersson <simon.v.pettersson@gmail.com>"]
 clap = "2.26"
 tera = "0.10"
 regex = "0.2"
+clippy = "*"

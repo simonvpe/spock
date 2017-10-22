@@ -60,7 +60,7 @@ fn get_destination(template: &str) -> String {
     caps["dst"].into()
 }
 
-fn write(content: &String, dst: &str) {
+fn write(content: &str, dst: &str) {
     let dst = Path::new(dst);
     println!("...generating {}", dst.to_str().unwrap());
     create_dir_all(dst.parent().unwrap()).unwrap();
@@ -81,15 +81,24 @@ fn tera(tmpl_dir: &str, testing: &str, exec: bool, lib: bool) -> Tera {
     let lib_tera  = compile_templates!(&glob_lib[..]);
     
     if testing != "" {
-        tera.extend( &test_tera );
+        match tera.extend( &test_tera ) {
+            Ok(_) => {},
+            Err(e) => { panic!("{:?}", e); }
+        }
     }
 
     if exec {
-        tera.extend( &exec_tera );
+        match tera.extend( &exec_tera ) {
+            Ok(_) => {},
+            Err(e) => { panic!("{:?}", e); }
+        }
     }
     
     if lib {
-        tera.extend( &lib_tera );
+        match tera.extend( &lib_tera ) {
+            Ok(_) => {},
+            Err(e) => { panic!("{:?}", e); }
+        }
     }
     tera
 }
