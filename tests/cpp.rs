@@ -44,7 +44,7 @@ mod cpp {
     }
     
     #[test]
-    fn create_without_exec_lib_name() {
+    fn create_without_exec_lib() {
         Assert::main_binary()
             .with_args(&["create", "cpp", "proj"])
             .fails()
