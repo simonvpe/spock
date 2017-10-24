@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project({{ name }})
+project({{ name }} LANGUAGES CXX)
 
 # Default to building release
 if(NOT CMAKE_BUILD_TYPE)
