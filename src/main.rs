@@ -7,7 +7,7 @@ extern crate tera;
 extern crate clap;
 extern crate regex;
 
-use clap::{App, Arg, SubCommand};
+use clap::{App, Arg, SubCommand, AppSettings};
 
 mod cpp;
 mod git;
@@ -21,6 +21,7 @@ fn main() {
              .takes_value(true)
              .long("templates")
              .short("t"))
+        .setting(AppSettings::SubcommandRequiredElseHelp)
         .subcommand(SubCommand::with_name("create")
                     .about("creates a new package")
                     .arg(Arg::with_name("lang")
@@ -60,24 +61,33 @@ fn main() {
         )
         .get_matches();
     
-    let evt = match matches.subcommand() {
+    match matches.subcommand() {
         
-        ("create", Some(sub_matches)) => Event::Create {
-            dir:  sub_matches.value_of("dir").unwrap_or("./"),
-            tmpl_dir: matches.value_of("templates").unwrap_or("/usr/share/spock"),
-            lang: sub_matches.value_of("lang").unwrap(),
-            name: sub_matches.value_of("name").unwrap(),
-            testing: match sub_matches.value_of("testing") {
-                Some(x) => x,
-                None => ""
-            },
-            exec: sub_matches.is_present("exec"),
-            lib: sub_matches.is_present("lib")
+        ("create", Some(sub_matches)) => {
+            let evt = Event::Create {
+                dir:  sub_matches.value_of("dir").unwrap_or("./"),
+                tmpl_dir: matches.value_of("templates").unwrap_or("/usr/share/spock"),
+                lang: sub_matches.value_of("lang").unwrap(),
+                name: sub_matches.value_of("name").unwrap(),
+                testing: match sub_matches.value_of("testing") {
+                    Some(x) => x,
+                    None => ""
+                },
+                exec: sub_matches.is_present("exec"),
+                lib: sub_matches.is_present("lib")
+            };
+            match handle_event(&evt) {
+                Err(e) => {
+                    println!("{}\n", e.to_string());
+                    println!("{}\n", sub_matches.usage().to_string());
+                    println!("For more information try --help");
+                    std::process::exit(1);
+                },
+                Ok(_) => {}
+            }
         },
-        (&_, _) => Event::Invalid
+        (&_, _) => unreachable!()
     };
-
-    handle_event(&evt);
 }
 
 enum Event<'a> {
@@ -89,24 +99,22 @@ enum Event<'a> {
         testing: &'a str,
         exec: bool,
         lib: bool
-    },
-    Invalid
+    }
 }
 
-fn handle_event(evt: &Event) {
+fn handle_event(evt: &Event) -> Result<(), String> {
     match *evt {
         Event::Create { dir, tmpl_dir, lang, name, testing, exec, lib } => {
             match lang {
                 "cpp" | "c++" | "C++" => {
                     cpp::create(dir, tmpl_dir, name, testing, exec, lib);
+                    Ok(())
                 },
-                _ => println!("Bad language \"{}\"", lang)
+                _ => {
+                    Err(format!("error: bad language \"{}\"", lang).to_owned())
+                }
             }
             
-        },
-
-        Event::Invalid => {
-            println!("Invalid subcommand");
         }
     }
 }

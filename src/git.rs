@@ -10,15 +10,6 @@ pub fn check_executable() -> ExitStatus {
         .expect("Could not find git")
 }
 
-pub fn check_git_repository(dir: &str) -> ExitStatus {
-    Command::new("git")
-        .args(&["-C", dir, "rev-parse", "--git-dir"])
-        .stdout(Stdio::null())
-        .stderr(Stdio::null())
-        .status()
-        .expect("Not a valid git repository")
-}
-
 pub fn init(dir: &str) -> ExitStatus {
     Command::new("git")
         .args(&["-C", dir, "init"])

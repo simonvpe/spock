@@ -17,12 +17,6 @@ pub fn create(dir: &str, tmpl_dir: &str, name: &str, testing: &str, exec: bool, 
     println!("Creating project directory");
     create_dir_all(dir).unwrap();
 
-    
-    println!("Checking destination");
-    if git::check_git_repository(dir).success() {
-        panic!("Seems to already be a valid git repository");
-    }
-
     println!("Generating files...");
 
     let tera = tera(tmpl_dir, testing, exec, lib);
@@ -53,8 +47,7 @@ pub fn create(dir: &str, tmpl_dir: &str, name: &str, testing: &str, exec: bool, 
     }
 
     println!("Adding all files");
-    let glob = dir.to_owned() + "/*";
-    if !git::add(dir, &glob).success() {
+    if !git::add(dir, "*").success() {
         panic!("Failed to add files");
     }
 

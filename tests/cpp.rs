@@ -59,7 +59,9 @@ mod cpp {
         let src_dir = tempdir::TempDir::new("spock").unwrap();
         let src_path = src_dir.path().to_str().unwrap();
 
-        let cmd = &["target/debug/spock", "create", "-C", src_path, "cpp", "exec-proj", "--exec"];
+        let cmd = &["target/debug/spock",
+                    "--templates", "./templates",
+                    "create", "-C", src_path, "cpp", "exec-proj", "--exec"];
         Assert::command(cmd).unwrap();
 
         assert_is_git_repo(src_path);
