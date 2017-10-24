@@ -15,5 +15,5 @@ target_compile_features({{ name }}
   PRIVATE cxx_std_17)
 
 install(TARGETS {{ name }}
-  LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
-  PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_PREFIX}/include/{{ name }})
+  LIBRARY DESTINATION lib
+  PUBLIC_HEADER DESTINATION include/{{ name }})

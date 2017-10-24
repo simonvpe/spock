@@ -11,4 +11,4 @@ target_link_libraries({{ name }}
   ${GLOBAL_SHARED_LINK_LIST})
 
 install(TARGETS {{ name }}
-  DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+  DESTINATION bin)
