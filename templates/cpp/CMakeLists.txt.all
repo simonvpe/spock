@@ -1,15 +1,41 @@
 cmake_minimum_required(VERSION 3.8)
 project({{ name }})
 
+# Default to building release
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)
 endif()
 
-set(CMAKE_CXX_FLAGS "-Wall -Wextra")
-set(CMAKE_CXX_FLAGS_DEBUG "-g")
-set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+# Default CMAKE flags
+if(NOT CMAKE_CXX_FLAGS)
+  set(CMAKE_CXX_FLAGS "-Wall -Wextra")
+endif()
+
+if(NOT CMAKE_CXX_FLAGS_DEBUG)
+  set(CMAKE_CXX_FLAGS_DEBUG "-g")
+endif()
+
+if(NOT CMAKE_CXX_FLAGS_RELEASE)
+  set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+endif()
+
+# The GLOBAL_OUTPUT_PATH variable is used as prefix for
+# submodules. We want to globally the
+set(GLOBAL_OUTPUT_PATH ${PROJECT_BINARY_DIR}/modules)
+set(GLOBAL_INCLUDE_PATH ${GLOBAL_OUTPUT_PATH}/include)
+set(GLOBAL_LIBRARY_PATH ${GLOBAL_OUTPUT_PATH}/lib)
+include_directories(${GLOBAL_INCLUDE_PATH})
+link_directories(${GLOBAL_LIBRARY_PATH})
+
+# Include all modules
+include(ExternalProject)
+file(GLOB MODULE_CMAKE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/external.*.cmake")
+if(MODULE_CMAKE_FILES)
+  include(${MODULE_CMAKE_FILES})
+endif()
 
 add_subdirectory(src)
+
 {% if testing != "" %}
 add_subdirectory(test)
 {% endif %}

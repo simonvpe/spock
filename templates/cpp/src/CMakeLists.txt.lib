@@ -1,23 +1,19 @@
 set(SOURCES
-  ${CMAKE_CURRENT_SOURCE_DIR}/example.cpp
-)
+  ${CMAKE_CURRENT_SOURCE_DIR}/example.cpp)
  
-add_library({{ name }} SHARED ${SOURCES})
+add_library({{ name }}
+  SHARED ${SOURCES})
 
 target_include_directories({{ name }} PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/include/{{ name }}>
-  )
+  $<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/include/{{ name }}>)
 
 set_target_properties({{ name }}
-  PROPERTIES PUBLIC_HEADER ${CMAKE_SOURCE_DIR}/include/example.hpp
-)
+  PROPERTIES PUBLIC_HEADER ${CMAKE_SOURCE_DIR}/include/example.hpp)
 
 target_compile_features({{ name }}
-  PRIVATE cxx_std_17
-)
+  PRIVATE cxx_std_17)
 
 install(TARGETS {{ name }}
   LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
-  PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_PREFIX}/include/{{ name }}
-)
+  PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_PREFIX}/include/{{ name }})
